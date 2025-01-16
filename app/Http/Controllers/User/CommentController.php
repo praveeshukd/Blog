@@ -19,7 +19,7 @@ class CommentController extends Controller
 
     public function show($id){
 
-        $blog= Blog::with('comments')->where('id',$id)->first(); 
+        $blog= Blog::with('comments.replies')->where('id',$id)->first(); 
          return view('blog.show', compact('blog'));
 
     }
@@ -31,13 +31,14 @@ class CommentController extends Controller
         return redirect()->route('blog.index')->with('success', 'Comment Updated successfully!');
 
     }
-
-    public function delete(Request $request){
-     
-        $deleted = Blog::where('id', $request->id)->delete();
-        return response()->json(['success' => 'Blog deleted successfully.'], 200);
-        
-    }
+    public function destroy(Comments $comment)
+    {
     
+        $comment->delete(); 
+        return response()->json(['message' => 'Comment deleted successfully.']);
+      
+    }
+
+
     
 }

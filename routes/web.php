@@ -9,20 +9,23 @@ Route::get('/', function () {
     return redirect()->route('register');
 });
 
+
+
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['isAdmin', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::resource('blog', BlogController::class);
+    Route::resource('comment', CommentController::class);    
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
 
-Route::resource('blog', BlogController::class);
-Route::post('delete-blog', [BlogController::class, 'delete'])->name('blog.delete');
-Route::resource('comment', CommentController::class);
 
 
 require __DIR__.'/auth.php';

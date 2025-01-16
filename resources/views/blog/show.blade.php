@@ -27,7 +27,8 @@
                     @auth
                         @if ($comment->user_id === auth()->user()->id)
                             <div class="mt-2">
-                                <button onclick="toggleEditForm({{ $comment->id }})" class="text-blue-500">Edit</button>
+                                <button onclick="editForm({{ $comment->id }})" class="text-blue-500">Edit</button>
+                                <button id="delete" class="text-red-500" data-id="{{ $comment->id }}">Delete</button>
                             </div>
                             <div id="edit-form-{{ $comment->id }}" class="hidden mt-2">
                                 <form action="{{ route('comment.update', $comment->id) }}" method="POST">
@@ -35,6 +36,7 @@
                                     @method('PUT')
                                     <textarea name="content" class="w-full p-2 border border-gray-300 rounded-md" required>{{ $comment->content }}</textarea>
                                     <button type="submit" class="mt-2 bg-blue-500 text-white py-1 px-4 rounded-md hover:bg-blue-600">Update Comment</button>
+                                                                        <button type="submit" class="mt-2 bg-blue-500 text-white py-1 px-4 rounded-md hover:bg-blue-600">Update Comment</button>
                                 </form>
                             </div>
                         @endif
@@ -57,9 +59,35 @@
     </div>
 
 </x-app-layout>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-    function toggleEditForm(commentId) {
+    function editForm(commentId) {
         var editForm = document.getElementById('edit-form-' + commentId);
         editForm.classList.toggle('hidden');
     }
+    
+    $(document).on('click', '#delete', function (e) {
+        e.preventDefault();
+        var commentId = $(this).data('id'); 
+
+        if (confirm('Are you sure you want to delete this comment?')) {
+            $.ajax({
+                url: '/comment/' + commentId, 
+                type: 'DELETE',
+                data: {
+                    '_token': $('meta[name="csrf-token"]').attr('content'), // CSRF token
+                },
+                success: function (response) {
+                    alert(response.message); 
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('Failed to delete the comment. Please try again.');
+                    location.reload(); 
+                }
+            });
+        }
+    });
+
 </script>

@@ -13,12 +13,6 @@ class BlogController extends Controller
 {
     public $action;
     
-    // public function __construct(BlogInterface $action){
-
-    //    $this->action=$action;
-
-    // }
-
     public function index(){
 
         $blogs=Blog::get();
@@ -27,12 +21,16 @@ class BlogController extends Controller
     }
 
     public function create(){
+
         return view('blog.create');
+    
     }
 
     public function store(BlogCreateRequest $request){
-
-        $blogs=Blog::create($request->validated());
+    
+        $data=$request->validated();
+        $data['image']=$request->image->store('images', 'public'); 
+        Blog::create($data);
         return redirect()->route('blog.index')->with('success', 'Blog created successfully!');
     }
 
@@ -44,16 +42,22 @@ class BlogController extends Controller
     }
 
     public function update(BlogUpdateRequest $request, $id){
+       
+        $data=$request->validated();
+        $blog = Blog::where('id',$id)->first();
 
-        $blog = Blog::where('id',$id)->update($request->validated());
+        if ($request->hasFile('image'))
+            $data['image'] = $request->image->store('images', 'public');
+        
+        $blog->update($data);
         return redirect()->route('blog.index')->with('success', 'Blog updated successfully!');
 
     }
 
-    public function delete(Request $request){
+    public function destroy(Blog $blog){
      
-        $deleted = Blog::where('id', $request->id)->delete();
-        return response()->json(['success' => 'Blog deleted successfully.'], 200);
+        $blog->delete();
+        return response()->json(['message' => 'blog deleted successfully.']);
         
     }
     

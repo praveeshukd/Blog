@@ -9,7 +9,7 @@
             @method('PUT') 
 
             <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Post Title</label>
+                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
                 <input type="text" name="name" id="name" value="{{ old('name', $blog->name) }}" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md" required>
             </div>
 
